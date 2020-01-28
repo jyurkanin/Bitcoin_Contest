@@ -38,3 +38,7 @@ Third, I convert the big number to a string and convert the string
 to a list of ascii bytes and hash it with sha256.
 
 Doesn't really seem to work though.
+
+Also, I had the idea that a 6 digit number would multiply or concatenate
+with the 21 digit prime to get a 27 digit number, so I brute forced all
+6 digit numbers combined with the prime and all failed.  
