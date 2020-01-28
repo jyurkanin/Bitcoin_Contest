@@ -27,7 +27,10 @@ def priv2addr(priv):
 def padhex(s):
     return s[2:].rstrip('L').zfill(64)
 
-def test(bigno):
+def test_bip32(bigno):
+    if(bigno == 0):
+        return
+    
     private_master_bip = bip32_master_key(str(prime)) #seed with the 27 digit number
     private_child_bip = bip32_ckd(private_master_bip, bigno) #get the prime number'th child key
     test_key = bip32_extract_key(private_child_bip)
@@ -40,10 +43,7 @@ def test(bigno):
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         sys.exit()
 
-def test_derp(bigno):
-    if(bigno == 0):
-        return
-    
+def test(bigno):
     hex_private_key = padhex(hex(bigno))
     print("PKEY", hex_private_key)
     if(priv2addr(hex_private_key) == goal_address):
@@ -151,8 +151,3 @@ input("Press Enter Please")
 
 for i in all_test_numbers:
     test_with_prime(i)
-
-#for i in all_test_numbers:
-#    if(len(str(i)) == 27):
-#        print(i)
-#    print(len(str(i)), i)
