@@ -10,6 +10,17 @@ import hashlib
 
 from utils import *
 
+
+#My idea with these tests is to see if after converting to base58
+#I should try to do a caesar cipher type of thing
+#Obviously, the ciphertext is too small for a frequency analysis or whatever,
+#so I'll just try all possible key shifts, from 1-58
+#So there's a couple ways I could do key shifts.
+#I could key shift before I decode, or after. Ill try both.
+#actually, no it doesn't make a whole lot of sense to do a caesar
+#cipher after the decode.
+
+
 goal_address = "1h8BNZkhsPiu6EKazP19WkGxDw3jHf9aT"
 prime = 957496696762772407663
 
@@ -33,18 +44,6 @@ def test_bip32(bigno):
     
     private_master_bip = bip32_master_key(str(prime)) #seed with the 27 digit number
     private_child_bip = bip32_ckd(private_master_bip, bigno) #get the prime number'th child key
-    test_key = bip32_extract_key(private_child_bip)
-    test_key = test_key[:-2]
-    
-    print("PKEY", test_key)
-    if(priv2addr(test_key) == goal_address):
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print ("private key: " + str(bigno))
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        sys.exit()
-
-    private_master_bip = bip32_master_key(str(bigno)) #seed with the 27 digit number
-    private_child_bip = bip32_ckd(private_master_bip, prime) #get the prime number'th child key
     test_key = bip32_extract_key(private_child_bip)
     test_key = test_key[:-2]
     
@@ -83,27 +82,23 @@ def test(bigno):
 
 
         
-def test_with_prime(smallno):    
+def test_with_prime(smallno):
     prime_combos = []
     prime_combos.append(prime*smallno)
     prime_combos.append(int(str(prime) + str(smallno)))
     prime_combos.append(int(str(smallno) + str(prime)))
     prime_combos.append(prime+smallno)
     prime_combos.append(prime^smallno)
-    prime_combos.append(int(prime/smallno))
     
     prime_combos.append(smallno*prime*prime)
     prime_combos.append(int(str(prime) + str(smallno) + str(prime)))
     prime_combos.append(int(str(prime) + str(prime) + str(smallno)))
     prime_combos.append(int(str(smallno) + str(prime) + str(prime)))
-    prime_combos.append(smallno % prime)
-    prime_combos.append(prime % smallno)
-
-    test_bip32(smallno)
     for i in prime_combos:
         test(i)
         
 #words = [["BITCOIN", "Bitcoin", "bitcoin",  "BTC", "BTc", "Btc", "BtC", "bTC", "bTc", "btC", "btc"],         ["ETHEREUM", "Ethereum", "ethereum", "ETH", "ETh", "EtH", "Eth", "eTH", "eTh", "etH", "eth"],         ["RIPPLE", "Ripple", "ripple", "XRP", "XRp", "XrP", "Xrp", "xRP", "xRp", "xrP", "xrp"],         ["PHEMEX", "Phemex", "phemex"], ["PRIME", "Prime", "prime"], ["EULER", "Euler", "euler"]]
+#These are the spellings I'm willing to investigate.
 words = [["BITCOIN", "Bitcoin", "bitcoin",  "BTC", "Btc", "btc"],         ["ETHEREUM", "Ethereum", "ethereum", "ETH", "Eth", "eth"],         ["RIPPLE", "Ripple", "ripple", "XRP", "Xrp", "xrp"],         ["PHEMEX", "Phemex", "phemex", "FMX", "fmx"]]
 all_capitalizations = [] #try every possible way to capitalize the words and create a 2d array of them.
 
@@ -121,24 +116,45 @@ for i in range(len(words[0])):
 
 
 #This does combinations
-for num_combos in range(1, 4):
-    print("Combos ", num_combos)
+for num_combinations in range(1, 4):
+    print("Combos ", num_combinations)
     line_counter = 0
     for line in all_capitalizations:
         print("line ", line_counter, "/", len(all_capitalizations))
         line_counter = line_counter + 1
-        possibles = list(combinations(line, num_combos))
+        possibles = list(combinations(line, num_combinations))
         for possible in possibles:
             test_string = ""
             for word in possible:
                 test_string = test_string + word
-            add_to_global_set(string_to_alpha_primes(test_string))
-            add_to_global_set(string_to_b58_primes(test_string))
-            add_to_global_set(string_to_alpha_lu_primes(test_string))
-            add_to_global_set(string_to_alpha_ul_primes(test_string))
-            
+
+            #Because of multiplication, order doesn't matter, and only combinations need to be investigated.
+            #These use products to make a big int
+            for shift in range(58):
+                add_to_global_set(string_to_ascii_product_shift(test_string, shift))
+                add_to_global_set(string_to_b58_product_shift(test_string, shift))
+
+print("Combinations Found", len(all_test_numbers))
+input("Press Enter Please")
+
+#This does permutations
+for num_permutations in range(1, 4):
+    print("Permutes ", num_permutations)
+    line_counter = 0
+    for line in all_capitalizations:
+        print("line ", line_counter, "/", len(all_capitalizations))
+        line_counter = line_counter + 1
+        possibles = list(permutations(line, num_permutations))
+        for possible in possibles:
+            test_string = ""
+            for word in possible:
+                test_string = test_string + word
+            #for concatenation and direct decoding, order does matter. So use permutations
+            for shift in range(58):
+                add_to_global_set(string_to_b58_concat_shift(test_string, shift))            
+                add_to_global_set(string_to_b58_shift(test_string, shift))            
         
-print("Len without repeats", len(all_test_numbers))
+print("Permutations Found", len(all_test_numbers))
 input("Press Enter Please")
 
 for i in all_test_numbers:
