@@ -107,43 +107,20 @@ for i in range(len(words[0])):
 
 
 #This does combinations
-for num_permutations in range(1, 4):
-    print("Permutes ", num_permutations)
+for num_combos in range(1, 4):
+    print("Combos ", num_combos)
     line_counter = 0
     for line in all_capitalizations:
         print("line ", line_counter, "/", len(all_capitalizations))
         line_counter = line_counter + 1
-        possibles = list(permutations(line, num_permutations))
+        possibles = list(combinations(line, num_combos))
         for possible in possibles:
             test_string = ""
             for word in possible:
                 test_string = test_string + word
-            
-            #These use products to make a big int
-            add_to_global_set(string_to_ascii_product(test_string))
-            add_to_global_set(string_to_nocase_alphabet_index_product(test_string))
-            add_to_global_set(string_to_lu_case_alphabet_index_product(test_string))
-            add_to_global_set(string_to_ul_case_alphabet_index_product(test_string))
-            add_to_global_set(string_to_b58_product(test_string))
-            
-            #These use concatenation of strings to make a big int
-            add_to_global_set(string_to_nocase_alphabet_index_concat(test_string))
-            add_to_global_set(string_to_lu_case_alphabet_index_concat(test_string))
-            add_to_global_set(string_to_ul_case_alphabet_index_concat(test_string))
-            add_to_global_set(string_to_b58_concat(test_string))
-            
-            #This is a direct b58 conversion
-            add_to_global_set(string_to_b58(test_string))
-
-            #These ones do c % 21 for each character in string and then compute product
-            add_to_global_set(string_to_b58_mod_p(test_string))
-            add_to_global_set(string_to_ascii_mod_p(test_string))
-            add_to_global_set(string_to_alpha_mod_p(test_string))
-
-            #These ones do c % 21 for each character in string and then concatenate 
-            add_to_global_set(string_to_b58_mod_cat(test_string))
-            add_to_global_set(string_to_ascii_mod_cat(test_string))
-            add_to_global_set(string_to_alpha_mod_cat(test_string))
+            add_to_global_set(string_to_b58_primes(test_string))
+            add_to_global_set(string_to_alpha_lu_primes(test_string))
+            add_to_global_set(string_to_alpha_ul_primes(test_string))
             
         
 print("Len without repeats", len(all_test_numbers))
