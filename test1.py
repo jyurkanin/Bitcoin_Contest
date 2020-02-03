@@ -46,6 +46,21 @@ def multiply_all(l_nums):
         num = num * l
     return num
 
+
+
+
+prime = 957496696762772407663
+XRP = 231715 #24*18*16
+ETH = 4197 #5*20*8
+BTC = 1192 #2*20*3
+Phemex = 157412423 #16*8*5*13*5*24 # pheme mex
+
+test(prime * (XRP + ETH + BTC + Phemex))
+test((prime * XRP) & (prime * ETH) & (prime * BTC) & (prime * Phemex))
+test((prime * XRP) | (prime * ETH) | (prime * BTC) | (prime * Phemex))
+test((prime * XRP) ^ (prime * ETH) ^ (prime * BTC) ^ (prime * Phemex))
+
+
 prime = 957496696762772407663
 XRP = int(binascii.hexlify(base58.b58decode("XRP")), 16) # converted from base58 to base10
 ETH = int(binascii.hexlify(base58.b58decode("ETH")), 16)

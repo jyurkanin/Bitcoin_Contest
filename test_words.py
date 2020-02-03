@@ -16,6 +16,7 @@ prime = 957496696762772407663
 all_test_numbers = set() #no repeats
 
 def add_to_global_set(thing):
+    print(thing)
     if(len(str(thing)) == 27):
         all_test_numbers.add(thing)
 
@@ -73,24 +74,23 @@ def test(bigno):
         
 def test_with_prime(smallno):
     prime_combos = []
+    prime_combos.append(smallno)
     prime_combos.append(prime*smallno)
     prime_combos.append(int(str(prime) + str(smallno)))
     prime_combos.append(int(str(smallno) + str(prime)))
     prime_combos.append(prime+smallno)
     prime_combos.append(prime^smallno)
-    prime_combos.append(int(prime/smallno))
     
     prime_combos.append(smallno*prime*prime)
     prime_combos.append(int(str(prime) + str(smallno) + str(prime)))
     prime_combos.append(int(str(prime) + str(prime) + str(smallno)))
     prime_combos.append(int(str(smallno) + str(prime) + str(prime)))
-    prime_combos.append(smallno % prime)
-    prime_combos.append(prime % smallno)
     for i in prime_combos:
         test(i)
         
 #words = [["BITCOIN", "Bitcoin", "bitcoin",  "BTC", "BTc", "Btc", "BtC", "bTC", "bTc", "btC", "btc"],         ["ETHEREUM", "Ethereum", "ethereum", "ETH", "ETh", "EtH", "Eth", "eTH", "eTh", "etH", "eth"],         ["RIPPLE", "Ripple", "ripple", "XRP", "XRp", "XrP", "Xrp", "xRP", "xRp", "xrP", "xrp"],         ["PHEMEX", "Phemex", "phemex"], ["PRIME", "Prime", "prime"], ["EULER", "Euler", "euler"]]
 words = [["BITCOIN", "Bitcoin", "bitcoin",  "BTC", "Btc", "btc"],         ["ETHEREUM", "Ethereum", "ethereum", "ETH", "Eth", "eth"],         ["RIPPLE", "Ripple", "ripple", "XRP", "Xrp", "xrp"],         ["PHEMEX", "Phemex", "phemex", "FMX", "fmx"]]
+#words = [["BITCOIN", "Bitcoin", "bitcoin"],         ["ETHEREUM", "Ethereum", "ethereum"],         ["RIPPLE", "Ripple", "ripple"],         ["PHEMEX", "Phemex", "phemex"]]
 all_capitalizations = [] #try every possible way to capitalize the words and create a 2d array of them.
 
 #There has got to be a better way to do this.
@@ -106,8 +106,32 @@ for i in range(len(words[0])):
                 all_capitalizations.append(word_list)
 
 
+
 #This does combinations
-for num_permutations in range(1, 4):
+for num_combinations in range(1, 5):
+    print("Combos ", num_combinations)
+    line_counter = 0
+    for line in all_capitalizations:
+        print("line ", line_counter, "/", len(all_capitalizations))
+        line_counter = line_counter + 1
+        possibles = list(combinations(line, num_combinations))
+        for possible in possibles:
+            test_string = ""
+            for word in possible:
+                test_string = test_string + word
+            #Because of multiplication, order doesn't matter, and only combinations need to be investigated.
+            #These use products to make a big int
+            add_to_global_set(string_to_ascii_product(test_string))
+            add_to_global_set(string_to_nocase_alphabet_index_product(test_string))
+            add_to_global_set(string_to_lu_case_alphabet_index_product(test_string))
+            add_to_global_set(string_to_ul_case_alphabet_index_product(test_string))
+            add_to_global_set(string_to_b58_product(test_string))
+
+print("Combinations Found", len(all_test_numbers))
+input("Press Enter Please")
+
+#This does permutations
+for num_permutations in range(1, 5):
     print("Permutes ", num_permutations)
     line_counter = 0
     for line in all_capitalizations:
@@ -118,32 +142,20 @@ for num_permutations in range(1, 4):
             test_string = ""
             for word in possible:
                 test_string = test_string + word
-            
-            #These use products to make a big int
-            add_to_global_set(string_to_ascii_product(test_string))
-            add_to_global_set(string_to_nocase_alphabet_index_product(test_string))
-            add_to_global_set(string_to_lu_case_alphabet_index_product(test_string))
-            add_to_global_set(string_to_ul_case_alphabet_index_product(test_string))
-            add_to_global_set(string_to_b58_product(test_string))
-            
-            #These use concatenation of strings to make a big int
+            #for concatenation and direct decoding, order does matter. So use permutations
             add_to_global_set(string_to_nocase_alphabet_index_concat(test_string))
             add_to_global_set(string_to_lu_case_alphabet_index_concat(test_string))
             add_to_global_set(string_to_ul_case_alphabet_index_concat(test_string))
             add_to_global_set(string_to_b58_concat(test_string))
-            
-            #This is a direct b58 conversion
             add_to_global_set(string_to_b58(test_string))
-
             #These ones do c % 21 for each character in string and then compute product
-            add_to_global_set(string_to_b58_mod_p(test_string))
-            add_to_global_set(string_to_ascii_mod_p(test_string))
-            add_to_global_set(string_to_alpha_mod_p(test_string))
-
+#            add_to_global_set(string_to_b58_mod_p(test_string))
+#            add_to_global_set(string_to_ascii_mod_p(test_string))
+#            add_to_global_set(string_to_alpha_mod_p(test_string))
             #These ones do c % 21 for each character in string and then concatenate 
-            add_to_global_set(string_to_b58_mod_cat(test_string))
-            add_to_global_set(string_to_ascii_mod_cat(test_string))
-            add_to_global_set(string_to_alpha_mod_cat(test_string))
+#            add_to_global_set(string_to_b58_mod_cat(test_string))
+#            add_to_global_set(string_to_ascii_mod_cat(test_string))
+#            add_to_global_set(string_to_alpha_mod_cat(test_string))
             
         
 print("Len without repeats", len(all_test_numbers))

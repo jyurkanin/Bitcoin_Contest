@@ -1,10 +1,11 @@
 import string
 import base58
 import binascii
+import copy
 
 lower_upper = string.ascii_lowercase + string.ascii_uppercase
 upper_lower = string.ascii_uppercase + string.ascii_lowercase
-
+the_prime = "957496696762772407663"
 
 
 
@@ -13,10 +14,8 @@ def string_to_b58(word):
     cleaned = word.replace("0", "")
     cleaned = cleaned.replace("O", "")
     cleaned = cleaned.replace("I", "")
-    cleaned = cleaned.replace("l", "")    
+    cleaned = cleaned.replace("l", "") 
     return int(binascii.hexlify(base58.b58decode(cleaned)), 16)
-
-
 
 
 
@@ -63,14 +62,14 @@ def string_to_b58_product(word):
 def string_to_ascii_mod_p(word):
     product = 1
     for c in word:
-        product = product * (ord(c) % 21)
+        product = product * int(the_prime[(ord(c) % 21)])
     return product
 
 def string_to_alpha_mod_p(word):
     product = 1
     temp = word.lower()
     for c in temp:
-        product = product * (string.ascii_lowercase.index(c) % 21)
+        product = product * int(the_prime[string.ascii_lowercase.index(c) % 21])
     return product
 
 def string_to_b58_mod_p(word):
@@ -78,7 +77,7 @@ def string_to_b58_mod_p(word):
     for c in word:
         if(c =="0" or c == "O" or c == "l" or c == "I"):
             continue
-        product = product * (int(binascii.hexlify(base58.b58decode(c)), 16) %21)
+        product = product * int(the_prime[int(binascii.hexlify(base58.b58decode(c)), 16) %21])
     return product
 
 
@@ -118,16 +117,12 @@ def string_to_b58_concat(word):
 
 
 
-
-
-
-
-
+######################################## modulus variants of above functions
 def string_to_alpha_mod_cat(word):
     concat = ""
     temp = word.lower()
     for c in temp:
-        concat = concat + str(string.ascii_lowercase.index(c) % 21)
+        concat = concat + the_prime[string.ascii_lowercase.index(c) % 21]
     return int(concat)
 
 def string_to_b58_mod_cat(word):
@@ -135,13 +130,14 @@ def string_to_b58_mod_cat(word):
     for c in word:
         if(c =="0" or c == "O" or c == "l" or c == "I"):
             continue
-        concat = concat + str(int(binascii.hexlify(base58.b58decode(c)), 16) % 21)
+        concat = concat + the_prime[int(binascii.hexlify(base58.b58decode(c)), 16) % 21]
     return int(concat)
 
 def string_to_ascii_mod_cat(word):
     concat = ""
     for c in word:
-        concat = concat + str(ord(c) % 21)
+        print(c)
+        concat = concat + the_prime[ord(c) % 21]
     return int(concat)
 
 
@@ -178,3 +174,37 @@ def string_to_b58_primes(word):
         product = product * primes[int(binascii.hexlify(base58.b58decode(c)), 16)]
     return product
         
+
+
+#Caesar Cipher type functions that do the same as above but do a shift
+def string_to_b58_shift(word, shift):
+    cleaned = word.replace("0", "")
+    cleaned = cleaned.replace("O", "")
+    cleaned = cleaned.replace("I", "")
+    cleaned = cleaned.replace("l", "")
+    shifted = ""
+    for i in range(len(cleaned)):
+        shifted = shifted + base58.b58encode_int((base58.b58decode_int(cleaned[i]) + shift) % 58).decode("UTF8")
+    return base58.b58decode_int(shifted)
+
+def string_to_ascii_product_shift(word, shift):
+    product = 1
+    for c in word:
+        product = product * ((ord(c) + shift) % 128)
+    return product
+
+def string_to_b58_product_shift(word, shift):
+    product = 1
+    for c in word:
+        if(c =="0" or c == "O" or c == "l" or c == "I"):
+            continue
+        product = product * ((base58.b58decode_int(c) + shift) % 58)
+    return product
+
+def string_to_b58_concat_shift(word, shift):
+    concat = ""
+    for c in word:
+        if(c =="0" or c == "O" or c == "l" or c == "I"):
+            continue
+        concat = concat + str((base58.b58decode_int(c) + shift) % 58)
+    return int(concat)

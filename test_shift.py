@@ -38,6 +38,11 @@ def priv2addr(priv):
 def padhex(s):
     return s[2:].rstrip('L').zfill(64)
 
+def shift_string(s):
+    temp = ""
+    for c in s:
+        temp = temp + 
+
 def test_bip32(bigno):
     if(bigno == 0):
         return
@@ -127,12 +132,14 @@ for num_combinations in range(1, 4):
             test_string = ""
             for word in possible:
                 test_string = test_string + word
-
             #Because of multiplication, order doesn't matter, and only combinations need to be investigated.
             #These use products to make a big int
-            for shift in range(58):
-                add_to_global_set(string_to_ascii_product_shift(test_string, shift))
-                add_to_global_set(string_to_b58_product_shift(test_string, shift))
+            for shift in range(26):
+                add_to_global_set(string_to_ascii_product(test_string))
+                add_to_global_set(string_to_nocase_alphabet_index_product(test_string))
+                add_to_global_set(string_to_lu_case_alphabet_index_product(test_string))
+                add_to_global_set(string_to_ul_case_alphabet_index_product(test_string))
+                add_to_global_set(string_to_b58_product(test_string))
 
 print("Combinations Found", len(all_test_numbers))
 input("Press Enter Please")
@@ -150,9 +157,12 @@ for num_permutations in range(1, 4):
             for word in possible:
                 test_string = test_string + word
             #for concatenation and direct decoding, order does matter. So use permutations
-            for shift in range(58):
-                add_to_global_set(string_to_b58_concat_shift(test_string, shift))            
-                add_to_global_set(string_to_b58_shift(test_string, shift))            
+            for shift in range(26):
+                add_to_global_set(string_to_nocase_alphabet_index_concat(test_string))
+                add_to_global_set(string_to_lu_case_alphabet_index_concat(test_string))
+                add_to_global_set(string_to_ul_case_alphabet_index_concat(test_string))
+                add_to_global_set(string_to_b58_concat(test_string))
+                add_to_global_set(string_to_b58(test_string))
         
 print("Permutations Found", len(all_test_numbers))
 input("Press Enter Please")

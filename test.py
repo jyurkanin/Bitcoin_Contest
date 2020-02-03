@@ -1,5 +1,5 @@
 import binascii, hashlib, base58
-from bitcointools import *
+
 import decimal
 
 goal_address = "1h8BNZkhsPiu6EKazP19WkGxDw3jHf9aT"
@@ -46,7 +46,8 @@ BTC = 1192 #2*20*3
 Phemex = 157412423 #16*8*5*13*5*24 # pheme mex
 big_number= 95749669676277240766323171541971192157412423
 
-test(big_number)
-test(prime + XRP + ETH + BTC + Phemex)
 test(prime * (XRP + ETH + BTC + Phemex))
-test(prime * XRP * ETH * BTC * Phemex)
+test((prime * XRP) & (prime * ETH) & (prime * BTC) & (prime * Phemex))
+test((prime * XRP) | (prime * ETH) | (prime * BTC) | (prime * Phemex))
+test((prime * XRP) ^ (prime * ETH) ^ (prime * BTC) ^ (prime * Phemex))
+
